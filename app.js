@@ -1,6 +1,3 @@
-// Entry point for the app
-
-// // Express is the underlying web framework: https://expressjs.com
 import express from 'express';
 
 // https://expressjs.com/en/guide/using-middleware.html
@@ -8,7 +5,7 @@ import bodyParser from 'body-parser';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import errorHandler from 'errorhandler';
-import morgan from 'morgan';
+const morgan = require('morgan')
 
 // atlassian-connect-express also provides a middleware
 import ace from 'atlassian-connect-express';
@@ -76,9 +73,10 @@ app.use(addon.middleware());
 // Mount the static files directory
 // Anything in ./public is served up as static content
 const staticDir = path.join(__dirname, 'public');
-app.use(express.static(staticDir));
+
 // Enable static resource fingerprinting for far future expires caching in production
 app.use(expiry(app, {dir: staticDir, debug: devEnv}));
+app.use(express.static(staticDir));
 // Add an hbs helper to fingerprint static resource urls
 hbs.registerHelper('furl', function(url){ return app.locals.furl(url); });
 
@@ -91,4 +89,5 @@ routes(app, addon);
 // Boot the HTTP server
 http.createServer(app).listen(port, () => {
   console.log('App server running at ' + addon.config.localBaseUrl());
+  console.log('Plugin register url: ' + addon.config.localBaseUrl() + "/atlassian-connect.json")
 });

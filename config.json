@@ -15,7 +15,7 @@
         //
         // To specify a storage other than memory, set
         // "dialect" to one of Sequelize's other supported dialects:
-        // http://docs.sequelizejs.com/manual/installation/usage.html#dialects
+        // https://sequelize.org/docs/v6/other-topics/dialect-specific-things/
         //
         // To use a custom storage adapter, configure it in "store".
         // Make sure to register the adapter factory in app.js:
@@ -47,10 +47,10 @@
         //   npm install --save pg
         "store": {
             "adapter": "sequelize",
-            "dialect": "sqlite3",
-            "type": "memory"
-        },
-        "localBaseUrl": "https://ngrok-url"
+            "dialect": "sqlite",
+            "storage": "$DEVELOPMENT_DB",
+            "logging": false
+        }
     },
     // Configuration for production, which is enabled by setting
     // the NODE_ENV=production environment variable.
