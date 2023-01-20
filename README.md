@@ -17,6 +17,10 @@
 3. Paste `Plugin register url` that you copied and click **Register app**.
 4. Click **INSTALLATION URL** and install addon.
 
+## Registering after new run
+Ngrok server gives temporary link for every run. So, it will be renewed after server closed.
+1. Go to [bitbucket-apps] and remove addon.
+2. Register addon with new `Plugin register url`.
 
 [git]: http://git-scm.com/
 [node]: https://nodejs.org/
