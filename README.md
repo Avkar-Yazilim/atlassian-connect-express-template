@@ -8,8 +8,8 @@
     - Set this token to **`NGROK_AUTH_TOKEN`** value in `.env.development` file.
 5. Set **`DEVELOPMENT_DB`** value to anything you want *(eg. `dev_db.sqlite`)* in `.env.development` file.
 6. Set project `key`, `name` and any other parameters in atlassian-connect.json
-6.1. Run `npm run dev` command on terminal to start development server. (FAIL if e-mail is not verified for [ngrok])
-7. Copy the value of `Plugin register url` from terminal to register it to Bitbucket. This url has to be *https*.
+7. Run `npm run dev` command on terminal to start development server. (FAIL if e-mail is not verified for [ngrok])
+8. Copy the value of `Plugin register url` from terminal to register it to Bitbucket. This url has to be *https*.
 
 # How to Register Addon to Bitbucket in Development
 
