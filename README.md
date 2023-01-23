@@ -6,7 +6,7 @@
 4. Go to [ngrok], create account.
     - Go to [authtoken] page and copy token.
     - Set this token to **`NGROK_AUTH_TOKEN`** value in `.env.development` file.
-5. Set **`DEVELOPMENT_DB`** value to anything you want *(eg. `dev_db.sqlite`)*.
+5. Set **`DEVELOPMENT_DB`** value to anything you want *(eg. `dev_db.sqlite`)* in `.env.development` file.
 6. Run `npm run dev` command on terminal to start development server.
 7. Copy the value of `Plugin register url` from terminal to register it to Bitbucket. This url has to be *https*.
 
