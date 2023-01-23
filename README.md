@@ -3,7 +3,7 @@
 1. Install [git], [node], [npm].
 2. Run `npm install`.
 3. Create copy of `.env` file with name `.env.development`
-4. Go to [ngrok], create account.
+4. Go to [ngrok], create account and verify your e-mail via sent message to your e-mail
     - Go to [authtoken] page and copy token.
     - Set this token to **`NGROK_AUTH_TOKEN`** value in `.env.development` file.
 5. Set **`DEVELOPMENT_DB`** value to anything you want *(eg. `dev_db.sqlite`)* in `.env.development` file.
