@@ -36,6 +36,7 @@ class AddonOperations {
             console.error("Please login to bitbucket first.");
             return;
         }
+        let success;
         console.log("Registering addon.");
         const installationUrl = `https://bitbucket.org/site/addons/authorize?addon_key=${this.addonKey}`;
 
@@ -72,8 +73,7 @@ class AddonOperations {
                 await frame2
                     .waitForSelector("xpath///span[contains(text(), 'Remove')]/ancestor::button", { visible: true })
                     .then(async (button) => await button.click());
-                await frame2
-                    .waitForSelector("xpath///div[@role='dialog']", { visible: true });
+                await frame2.waitForSelector("xpath///div[@role='dialog']", { visible: true });
                 await frame2
                     .$$("xpath///span[contains(text(), 'Remove')]/ancestor::button")
                     .then(async (buttons) => await buttons[1].click());
@@ -91,7 +91,19 @@ class AddonOperations {
             await frame2
                 .waitForSelector("xpath///span[contains(text(), 'Register app')]/ancestor::button", { visible: true })
                 .then(async (button) => await button.click());
-            await frame2.waitForFunction(() => !document.querySelector("div[role='dialog']"));
+            await addonRegisterPage
+                .waitForResponse(
+                    async (response) => {
+                        if (response.url().includes("/apps") && response.status() !== 200) {
+                            const error_message = await response.json().then((data) => data.error.message);
+                            console.error(`Error while registering addon: ${error_message}`);
+                            success = false;
+                        }
+                    },
+                    { timeout: 3000 }
+                )
+                .catch((error) => error);
+            if (!success) return;
 
             // Go to the installation page
             const installationPage = await this.browser.newPage();
