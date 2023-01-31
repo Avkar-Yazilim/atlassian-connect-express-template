@@ -36,7 +36,7 @@ class AddonOperations {
             console.error("Please login to bitbucket first.");
             return;
         }
-        let success;
+        let success = true;
         console.log("Registering addon.");
         const installationUrl = `https://bitbucket.org/site/addons/authorize?addon_key=${this.addonKey}`;
 
@@ -91,18 +91,16 @@ class AddonOperations {
             await frame2
                 .waitForSelector("xpath///span[contains(text(), 'Register app')]/ancestor::button", { visible: true })
                 .then(async (button) => await button.click());
-            await addonRegisterPage
-                .waitForResponse(
-                    async (response) => {
-                        if (response.url().includes("/apps") && response.status() !== 200) {
-                            const error_message = await response.json().then((data) => data.error.message);
-                            console.error(`Error while registering addon: ${error_message}`);
-                            success = false;
-                        }
-                    },
-                    { timeout: 3000 }
-                )
-                .catch((error) => error);
+            await addonRegisterPage.waitForResponse(async (response) => {
+                if (response.url().includes("/apps")) {
+                    if (response.status() !== 200) {
+                        const error_message = await response.json().then((data) => data.error.message);
+                        console.error(`Error while registering addon: ${error_message}`);
+                        success = false;
+                    }
+                    return true;
+                }
+            });
             if (!success) return;
 
             // Go to the installation page

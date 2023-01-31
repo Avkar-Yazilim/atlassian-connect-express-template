@@ -1,7 +1,7 @@
 const ngrok = require("ngrok");
 const nodemon = require("nodemon");
-var fs = require("fs");
-var AddonOperations = require("./util/addon_operations");
+const fs = require("fs");
+const AddonOperations = require("./util/addon_operations");
 
 if (!fs.existsSync(".env.development")) {
     console.error("Please create a .env.development file in the root of the project.");
@@ -25,10 +25,12 @@ ngrok
         authtoken: process.env.NGROK_AUTH_TOKEN,
         proto: "http",
         addr: "3000",
+
     })
     .then(async (url) => {
         process.env.AC_LOCAL_BASE_URL = url;
-        registerUrl = url + "/atlassian-connect.json";
+        const registerUrl = url + "/atlassian-connect.json";
+        deleteDevDB(process.env.DEVELOPMENT_DB);
         runServer();
         if (credentials) {
             await installAddon(addonJson.key, registerUrl, credentials);
@@ -63,9 +65,6 @@ let onExit = () => {
         ngrok.kill().then(() => {
             process.exit(0);
         });
-    });
-    process.on("exit", () => {
-        deleteDevDB(process.env.DEVELOPMENT_DB);
     });
 };
 

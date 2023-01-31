@@ -18,7 +18,6 @@ import hbs from 'express-hbs';
 // We also need a few stock Node modules
 import http from 'http';
 import path from 'path';
-import os from 'os';
 
 // Routes live here; this is the C in MVC
 import routes from './routes';
