@@ -66,7 +66,7 @@ class AddonOperations {
             const elementHandle2 = await addonRegisterPage.waitForSelector("#settings-frame", { visible: true });
             const frame2 = await elementHandle2.contentFrame();
             const installedAddonBox = await frame2
-                .$(`xpath///a[contains(text(), "${installationUrl}")]/ancestor::div[@class='boxed-list--item']`)
+                .$(`xpath///a[text()="${installationUrl}"]/ancestor::div[@class="boxed-list--item"]`)
                 .then((element) => element);
             if (installedAddonBox) {
                 // If addon is already installed, remove it.
