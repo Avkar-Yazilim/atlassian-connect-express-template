@@ -1,7 +1,7 @@
 const ngrok = require("ngrok");
 const nodemon = require("nodemon");
 const fs = require("fs");
-const AddonOperations = require("./util/addon_operations");
+const AddonOperations = require("./util/addon");
 
 if (!fs.existsSync(".env.development")) {
     console.error("Please create a .env.development file in the root of the project.");
@@ -25,7 +25,6 @@ ngrok
         authtoken: process.env.NGROK_AUTH_TOKEN,
         proto: "http",
         addr: "3000",
-
     })
     .then(async (url) => {
         process.env.AC_LOCAL_BASE_URL = url;

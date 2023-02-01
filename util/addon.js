@@ -52,7 +52,7 @@ class AddonOperations {
                 const elementHandle1 = await page.waitForSelector("#settings-frame", { visible: true });
                 const frame1 = await elementHandle1.contentFrame();
                 await frame1.waitForSelector("#id-enable-development-mode", { visible: true });
-                await frame1.$eval("#id-enable-development-mode", async (check) => await (check.checked = true));
+                await frame1.$eval("#id-enable-development-mode", async (check) => (check.checked = true));
                 console.log("Development mode enabled.");
             }
 
@@ -65,32 +65,54 @@ class AddonOperations {
             await addonRegisterPage.waitForNetworkIdle({ idleTime: 1000 });
             const elementHandle2 = await addonRegisterPage.waitForSelector("#settings-frame", { visible: true });
             const frame2 = await elementHandle2.contentFrame();
-
-            const isAddonInstalled = !!(await frame2.$(`xpath///a[contains(text(), "${installationUrl}")]`));
-            if (isAddonInstalled) {
+            const installedAddonBox = await frame2
+                .$(`xpath///a[contains(text(), "${installationUrl}")]/ancestor::div[@class='boxed-list--item']`)
+                .then((element) => element);
+            if (installedAddonBox) {
                 // If addon is already installed, remove it.
                 console.log("Addon already registered. Removing it.");
-                await frame2
+                await installedAddonBox
                     .waitForSelector("xpath///span[contains(text(), 'Remove')]/ancestor::button", { visible: true })
                     .then(async (button) => await button.click());
                 await frame2.waitForSelector("xpath///div[@role='dialog']", { visible: true });
                 await frame2
                     .$$("xpath///span[contains(text(), 'Remove')]/ancestor::button")
-                    .then(async (buttons) => await buttons[1].click());
+                    .then(async (buttons) => await buttons.slice(-1)[0].click());
+                await addonRegisterPage.waitForNetworkIdle({ idleTime: 1000 });
             }
 
-            await addonRegisterPage.waitForNetworkIdle({ idleTime: 1000 });
-            await frame2
-                .waitForSelector("xpath///span[contains(text(), 'Register an app')]/ancestor::button", {
-                    visible: true,
-                })
-                .then(async (button) => await button.click());
+            const isAnotherAddonInstalled = !!(await frame2.$(".aui-group"));
+            if (isAnotherAddonInstalled) {
+                // If another addon is already installed, register app button should be visible.
+                await frame2
+                    .waitForSelector("xpath///span[contains(text(), 'Register app')]/ancestor::button", {
+                        visible: true,
+                    })
+                    .then(async (button) => await button.click());
+            } else {
+                await frame2
+                    .waitForSelector("xpath///span[contains(text(), 'Register an app')]/ancestor::button", {
+                        visible: true,
+                    })
+                    .then(async (button) => await button.click());
+            }
+
             await frame2
                 .waitForSelector("xpath///input[@placeholder='https://']", { visible: true })
                 .then(async (input) => await input.type(this.addonRegisterUrl));
-            await frame2
-                .waitForSelector("xpath///span[contains(text(), 'Register app')]/ancestor::button", { visible: true })
-                .then(async (button) => await button.click());
+
+            if (isAnotherAddonInstalled) {
+                await frame2
+                    .$$("xpath///span[contains(text(), 'Register app')]/ancestor::button", { visible: true })
+                    .then(async (buttons) => await buttons[1].click());
+            } else {
+                await frame2
+                    .waitForSelector("xpath///span[contains(text(), 'Register app')]/ancestor::button", {
+                        visible: true,
+                    })
+                    .then(async (button) => await button.click());
+            }
+
             await addonRegisterPage.waitForResponse(async (response) => {
                 if (response.url().includes("/apps")) {
                     if (response.status() !== 200) {
