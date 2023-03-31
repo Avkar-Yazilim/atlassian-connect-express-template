@@ -4,7 +4,7 @@
     "description": "Template for Bitbucket Cloud Plugin",
     "vendor": {
         "name": "Avkar Yazilim",
-        "url": "https://www.atlassian.com/angrynerds"
+        "url": "https://avkaryazilim.com.tr"
     },
     "baseUrl": "{{localBaseUrl}}",
     "authentication": {
@@ -58,6 +58,11 @@
             }
         ]
     },
-    "scopes": ["account", "repository"],
-    "contexts": ["account"]
+    "scopes": [
+        "account",
+        "repository"
+    ],
+    "contexts": [
+        "account"
+    ]
 }

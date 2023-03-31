@@ -3,7 +3,9 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "dev": "node development.js",
+        "host": "node .\/development.js host",
+        "addon": "node .\/development.js addon",
+        "dev": "nodemon -r esm app.js",
         "lint": "eslint app.js routes"
     },
     "dependencies": {
