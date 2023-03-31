@@ -13,7 +13,7 @@ class AddonOperations {
         console.log("Logging in to bitbucket.");
         this.browser = await puppeteer.launch({
             args: ["--no-sandbox"],
-            headless: false,
+            headless: true,
         });
         const loginPage = await this.browser.pages().then((pages) => pages[0]);
         try {
