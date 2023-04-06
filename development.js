@@ -150,7 +150,7 @@ const main = async () => {
                     await uninstallAddon(addonJson.key, credentials.bitbucket);
                     break;
             }
-            break;
+            process.exit(0);
         case "host":
             const type = process.argv[3];
             if (type === undefined) {
@@ -174,7 +174,6 @@ const main = async () => {
             console.error("Please specify a valid command.");
             process.exit(1);
     }
-    process.exit(0);
 };
 
 main();

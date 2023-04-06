@@ -47,8 +47,8 @@
         //   npm install --save pg
         "store": {
             "adapter": "sequelize",
-            "dialect": "postgres",
-            "url": "$DEVELOPMENT_DB",
+            "dialect": "sqlite",
+            "storage": "$DB_CONNECTION_STRING",
             "logging": false
         }
     },
