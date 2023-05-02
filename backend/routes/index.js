@@ -41,14 +41,14 @@ export default function routes(app, addon) {
         // the call to addon.authenticate() above verifies the JWT token provided by Bitbucket
         // in the iframe URL
 
-        var httpClient = addon.httpClient(req);
+        let httpClient = addon.httpClient(req);
 
         httpClient.get("/2.0/user/", function (err, resp, data) {
             try {
-                data = JSON.parse(data);
+                const json_data = JSON.parse(data);
                 res.render("connect-example", {
                     title: "Atlassian Connect",
-                    displayName: data.display_name,
+                    displayName: json_data.display_name,
                     repoPath: req.query.repoPath,
                 });
             } catch (e) {

@@ -75,7 +75,9 @@ hbs.registerHelper("furl", function (url) {
 });
 
 // Show nicer errors in dev mode
-if (devEnv) app.use(errorHandler());
+if (devEnv) {
+    app.use(errorHandler());
+}
 
 // Wire up routes
 routes(app, addon);

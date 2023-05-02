@@ -79,13 +79,16 @@ const ngrokReverseProxy = async (auth_token, port, callback) => {
 
 const serveoReverseProxy = async (subdomain, port, callback) => {
     ls = spawn("ssh", [
+        "-o ServerAliveInterval=240",
         "-R",
         `${subdomain}:80:localhost:${port}`,
         "serveo.net",
         "-T",
     ]);
     ls.stdout.on("data", (data) => {
-        if (!data.includes("Forwarding HTTP traffic from https://")) return;
+        if (!data.includes("Forwarding HTTP traffic from https://")) {
+            return;
+        }
         const url = `https://${subdomain}.serveo.net`;
         console.log(`Reverse proxy started at ${url}`);
         callback(url);
