@@ -5,7 +5,8 @@
   "author": "https://avkaryazilim.com.tr",
   "license": "ISC",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "install": "npm run build && npm install -g ."
   },
   "dependencies": {
     "dotenv": "^16.1.4",

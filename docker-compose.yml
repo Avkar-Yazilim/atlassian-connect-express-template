@@ -6,6 +6,7 @@ services:
       - ./backend/src:/usr/src/app/src
       - frontend-dist:/usr/src/app/src/public
     environment:
+      - PORT=${PORT}
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/db_addon
       - AC_LOCAL_BASE_URL=https://${SERVEO_SUBDOMAIN}.serveo.net
     env_file:

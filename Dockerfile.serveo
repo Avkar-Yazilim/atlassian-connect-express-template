@@ -9,5 +9,6 @@ ENV SERVER_PORT="3000"
 CMD autossh -M 0 -o ServerAliveInterval=240 -o ServerAliveCountMax=3 -o \
     ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -R $SERVEO_SUBDOMAIN:80:$PROXY_HOST:$SERVER_PORT serveo.net
 
+# Example usage:
 # docker build -f .\Dockerfile.serveo . -t serveo
 # docker run -it serveo

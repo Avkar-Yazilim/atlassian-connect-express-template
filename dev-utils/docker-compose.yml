@@ -4,3 +4,7 @@ services:
     build: ./
     cap_add:
       - SYS_ADMIN
+
+# Example Usage of Install
+# docker compose run --rm --build dev-cli install -k bitbucket_cloud_plugin_template -u https://bcaddon.serveo.net/atlassian-connect.json
+# ts-node .\app.ts install -k bitbucket_cloud_plugin_template -u https://bcaddon.serveo.net/atlassian-connect.json
