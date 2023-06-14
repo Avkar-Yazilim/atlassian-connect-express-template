@@ -1,69 +1,83 @@
+# Atlassian Bitbucket Cloud Plugin/Add-on Template
+This template is an enhanced version of Atlassian's own template for developing Bitbucket Cloud plugins. It is written in Node.js and Typescript and uses Express.js as a web framework. It is also using [atlassian-connect-express] library for Atlassian Connect Express framework.
+
+## Additional Features
+- **Easy to use reverse proxy:** By using [Serveo] instead of [ngrok] for reverse proxy, free subdomain usage was provided, eliminating the need for reinstallation at every reboot.
+- **Modern UI development:** A React-based UI development environment with [Vite] as an alternative to outdated handlebars-based UI development.
+- **Database operations:** Examples of database operations with [sequelize] library are provided.
+- **Hot reload:** Automatic reflection of both UI and Server code changes through [Vite] and [nodemon].
+- **Addon operations:** A CLI tool that automates addon installation/deletion operations with headless browser operations via [puppeeteer].
+- **Dockerization:** Get the whole environment up and running with a single command via [Docker].
+- **Lifecycle management:** Proper management of install/uninstall lifecycle hooks.
+
 # How to run
+Each component in the project can run on its own, in a container with docker and integrated with docker-compose.
 
-1. Install [git], [node], [npm].
-2. Run `npm install`.
-3. Create copy of `.env` file with name `.env.development`
-4. The local server must be hosted for the installation of the plugin. There are two options for this.
-    1. **Serveo**: Gives a fixed URL, no installation is required. Even if the local server is shut down, it can be re-hosted with the same name, so there is no need to install the plugin again each time, and the database tables do not need to be reset.
+## On Docker
 
-       Configuration:
-        - Set **`SERVEO_SUBDOMAIN`** value in `.env.development` file. This value represents subdomain of serveo.net. (eg. `serveo.net` -> `your-subdomain.serveo.net`)
-    2. **Ngrok**: Provides a variable URL in the free version, must be installed as an NPM package or globally. Re-installation of the plugin is required for each re-run, database tables need to be reset.
+1. Run `cp .env.example .env` command in main directory.
+2. Run `docker-compose up` command in main directory.
 
-       Configuration:
-        - Go to [ngrok], create account and verify your e-mail via sent message to your e-mail
-        - Go to [authtoken] page and copy token. - Set this token to **`NGROK_AUTH_TOKEN`** value in `.env.development` file.
-5. Set **`DB_CONNECTION_STRING`** value to your local postgres database url in `.env.development` file.
-6. Set the **`PORT`**(e.g `3000`) value in `.env.development` file.
-7. Set project `key`, `name` and any other parameters in atlassian-connect.json
-8. Run `npm run host <serveo/ngrok>` command on terminal to start development server. (If you use ngrok, It will be fail if e-mail is not verified for [ngrok])
-9. Copy the value of `Plugin register url` from terminal to register it to Bitbucket. This url has to be _https_.
+## On Local System
 
-# How to Register Addon to Bitbucket in Development
+### Backend
+
+1. Run `npm install` in `backend` folder.
+2. Run `cp .env.example .env` command.
+3. Set **`PORT`**, **`AC_LOCAL_BASE_URL`**, **`DATABASE_URL`** values in `.env` file.
+
+        PORT: Port number of the server. (e.g. 3000)
+        AC_LOCAL_BASE_URL: Base url of the server. (e.g. http://addon.serveo.net)
+        DATABASE_URL: Postgres database url. (e.g. postgres://postgres:postgres@localhost:5432/postgres)
+
+4. Set project `key`, `name` and any other parameters in atlassian-connect.json
+5. You can run the server with `npm start` command or `npm run dev` with nodemon to enable hot-reload.
+
+### Frontend
+
+1. Run `npm install` in `frontend` folder.
+3. Run `npm run build` to build the project.
+
+### CLI(dev-utils)
+
+1. Run `npm install` in `dev-utils` folder.
+2. Run `cp .env.example .env` command.
+2. Set your bitbucket credentials.
+3. Run `npm install -g .` to install the CLI globally.
+4. Then you can use defined functions from command-line.
+
+### Serveo
+
+1. Run `ssh -R <subdomain>:80:localhost:<port> serveo.net` command to start reverse proxy.
+
+# How to Register Addon in Development
+After running the server, you can register the addon in development mode with two different methods.
+
+## Manual Registration
 
 1. Go to [bitbucket-addon-management] page and enable development mode.
 2. Go to [bitbucket-apps] page and click **Register an app** button.
 3. Paste `Plugin register url` that you copied and click **Register app**.
 4. Click **INSTALLATION URL** and install addon.
 
----
-
-## Registering After New Run
-
-Ngrok server gives temporary link for every run. So, it will be renewed after server closed.
-
-1. Go to [bitbucket-apps] and remove addon.
-2. Register addon with new `Plugin register url`.
-
----
-
 ## Automatic Registration
 
-Automatic addon registration workflow is available with headless browser operations by using [puppeteer]. Follow the steps below to activate this.
+You can use dev-utils CLI to automate addon registration process with docker or without docker.
+After se
 
-1. Copy `example.credentials.json` file as `credentials.json` and set values.
-    - If `developmentMode` value is `true`, this means development mode enabling step will be skipped. But, it must be enabled in any way.
-    - **2FA** must be disabled for your account.
-2. Run `npm run dev` command on terminal, addon will be installed automatically with server start.
 
-If an addon is installed with same project key before, it will be automatically uninstalled before re-install.
+**Warning:** If an addon is installed with same project key before, it will be automatically uninstalled before re-install.
 
----
 
-## All Commands
+<!-- # Common Issues -->
 
-There are different available command options for development.
-
--   `npm run host <option> `: Starts the development server and hosts it to selected host service.
--   `npm run host <option> install`: Starts the development server and hosts it to selected host service. Then, it will be automatically installed to Bitbucket.
--   `npm run addon install <register_url>`: Installs addon to Bitbucket with given register url.
--   `npm run addon uninstall`: Uninstalls addon from Bitbucket with given project key in atlassian_connect.json.
-
-[git]: http://git-scm.com/
-[node]: https://nodejs.org/
-[npm]: https://github.com/npm/npm#super-easy-install
 [ngrok]: https://ngrok.com/
-[authtoken]: https://dashboard.ngrok.com/get-started/your-authtoken
 [bitbucket-addon-management]: https://bitbucket.org/account/addon-management
 [bitbucket-apps]: https://bitbucket.org/account/apps
 [puppeteer]: https://pptr.dev/
+[docker]: https://www.docker.com/
+[nodemon]: https://nodemon.io/
+[sequelize]: https://sequelize.org/
+[vite]: https://vitejs.dev/
+[serveo]: https://serveo.net/
+[atlassian-connect-express]: https://bitbucket.org/atlassian/atlassian-connect-express

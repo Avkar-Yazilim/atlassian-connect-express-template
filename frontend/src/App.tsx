@@ -3,6 +3,7 @@ import SectionMessage from "@atlaskit/section-message";
 import { useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
+import "./App.css";
 
 const ContainerWrapper = styled.div`
     min-width: 780px;

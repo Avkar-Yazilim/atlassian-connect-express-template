@@ -11,11 +11,11 @@ export default defineConfig({
     build: {
         lib: {
             entry: resolve(__dirname, "src/App.tsx"),
-            name: "my-lib",
-            fileName: "my-lib",
+            name: "app",
+            fileName: "app",
             formats: ["es"],
         },
-        outDir: "../backend/public/js",
+        outDir: "../backend/public",
         emptyOutDir: false,
         watch: {},
         minify: true,

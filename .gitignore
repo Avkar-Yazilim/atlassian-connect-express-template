@@ -9,6 +9,7 @@ credentials.json
 store.db
 package-lock.json
 *.sqlite
+.env
 
 # Logs
 logs

@@ -1,25 +1,27 @@
-const puppeteer = require("puppeteer");
+import puppeteer, { Browser } from "puppeteer";
+import { Credentials } from "./credentials";
 
-class AddonOperations {
-    constructor(addonKey, addonRegisterUrl, credentials) {
-        this.addonKey = addonKey;
-        this.addonRegisterUrl = addonRegisterUrl;
+export class AddonOperations {
+    credentials: Credentials;
+    browser: Browser;
+    loggedIn: boolean = false;
+    headless: boolean | "new" = "new";
+
+    constructor(credentials: Credentials) {
         this.credentials = credentials;
-        this.browser = null;
-        this.loggedIn = false;
     }
 
-    async loginToBitbucket() {
+    private async loginToBitbucket() {
         console.log("Logging in to bitbucket.");
         this.browser = await puppeteer.launch({
             args: ["--no-sandbox"],
-            headless: true,
+            headless: process.env.RUNNING_IN_DOCKER ? "new" : this.headless,
         });
         const loginPage = await this.browser.pages().then((pages) => pages[0]);
         try {
             // Login to bitbucket
             await loginPage.goto(
-                "https://id.atlassian.com/login?application=bitbucket"
+                "https://id.atlassian.com/loginapplication=bitbucket"
             );
             await loginPage
                 .waitForSelector("#username")
@@ -48,14 +50,14 @@ class AddonOperations {
         }
     }
 
-    async installAddon() {
+    private async installAddon(addonKey: string, registerUrl: string) {
         if (!this.loggedIn) {
             console.error("Please login to bitbucket first.");
             return;
         }
         let success = true;
         console.log("Registering addon.");
-        const installationUrl = `https://bitbucket.org/site/addons/authorize?addon_key=${this.addonKey}`;
+        const installationUrl = `https://bitbucket.org/site/addons/authorize?addon_key=${addonKey}`;
 
         try {
             if (!this.credentials.developmentMode) {
@@ -76,7 +78,7 @@ class AddonOperations {
                 });
                 await frame1.$eval(
                     "#id-enable-development-mode",
-                    async (check) => (check.checked = true)
+                    async (check: HTMLInputElement) => (check.checked = true)
                 );
                 console.log("Development mode enabled.");
             }
@@ -88,11 +90,11 @@ class AddonOperations {
             );
             await addonRegisterPage.waitForNavigation();
             await addonRegisterPage.waitForNetworkIdle({ idleTime: 1000 });
-            const elementHandle2 = await addonRegisterPage.waitForSelector(
+            let elementHandle2 = await addonRegisterPage.waitForSelector(
                 "#settings-frame",
                 { visible: true }
             );
-            const frame2 = await elementHandle2.contentFrame();
+            let frame2 = await elementHandle2.contentFrame();
             const installedAddonBox = await frame2
                 .$(
                     `xpath///a[text()="${installationUrl}"]/ancestor::div[@class="boxed-list--item"]`
@@ -117,9 +119,15 @@ class AddonOperations {
                     .then(
                         async (buttons) => await buttons.slice(-1)[0].click()
                     );
-                await addonRegisterPage.waitForNetworkIdle({ idleTime: 1000 });
+                await addonRegisterPage.waitForNetworkIdle({ timeout: 3000 });
+                await addonRegisterPage.reload();
             }
 
+            elementHandle2 = await addonRegisterPage.waitForSelector(
+                "#settings-frame",
+                { visible: true }
+            );
+            frame2 = await elementHandle2.contentFrame();
             const isAnotherAddonInstalled = !!(await frame2.$(".aui-group"));
             if (isAnotherAddonInstalled) {
                 // If another addon is already installed, register app button should be visible.
@@ -146,13 +154,13 @@ class AddonOperations {
                 .waitForSelector("xpath///input[@placeholder='https://']", {
                     visible: true,
                 })
-                .then(async (input) => await input.type(this.addonRegisterUrl));
+                .then(async (input) => await input.type(registerUrl));
 
             if (isAnotherAddonInstalled) {
+                console.log("Another addon is already installed.");
                 await frame2
                     .$$(
-                        "xpath///span[contains(text(), 'Register app')]/ancestor::button",
-                        { visible: true }
+                        "xpath///span[contains(text(), 'Register app')]/ancestor::button"
                     )
                     .then(async (buttons) => await buttons[1].click());
             } else {
@@ -194,13 +202,13 @@ class AddonOperations {
         }
     }
 
-    async uninstallAddon() {
+    private async uninstallAddon(addonKey: string) {
         if (!this.loggedIn) {
             console.error("Please login to bitbucket first.");
             return;
         }
         console.log("Removing addon.");
-        const installationUrl = `https://bitbucket.org/site/addons/authorize?addon_key=${this.addonKey}`;
+        const installationUrl = `https://bitbucket.org/site/addons/authorizeaddon_key=${addonKey}`;
         // Go to addon page
         const addonRegisterPage = await this.browser.newPage();
         await addonRegisterPage.goto(
@@ -212,7 +220,13 @@ class AddonOperations {
             "#settings-frame",
             { visible: true }
         );
+        if (!elementHandle2) {
+            throw new Error("Could not find settings frame.");
+        }
         const frame2 = await elementHandle2.contentFrame();
+        if (!frame2) {
+            throw new Error("Could not find settings frame.");
+        }
         const installedAddonBox = await frame2
             .$(
                 `xpath///a[text()="${installationUrl}"]/ancestor::div[@class="boxed-list--item"]`
@@ -237,9 +251,23 @@ class AddonOperations {
         console.log("Addon removed successfully.");
     }
 
-    async closeBrowser() {
+    private async closeBrowser() {
         await this.browser.close();
+    }
+
+    public async install(addonKey: string, registerUrl: string) {
+        const addonOperations = new AddonOperations(this.credentials);
+        await addonOperations.loginToBitbucket();
+        await addonOperations.installAddon(addonKey, registerUrl);
+        await addonOperations.closeBrowser();
+    }
+
+    public async uninstall(addonKey: string) {
+        const addonOperations = new AddonOperations(this.credentials);
+        await addonOperations.loginToBitbucket();
+        await addonOperations.uninstallAddon(addonKey);
+        await addonOperations.closeBrowser();
     }
 }
 
-module.exports = AddonOperations;
+export default AddonOperations;
