@@ -1,0 +1,68 @@
+{
+    "key": "bitbucket_cloud_plugin_template",
+    "name": "Bitbucket Cloud Plugin Template",
+    "description": "Template for Bitbucket Cloud Plugin",
+    "vendor": {
+        "name": "Avkar Yazilim",
+        "url": "https://avkaryazilim.com.tr"
+    },
+    "baseUrl": "{{localBaseUrl}}",
+    "authentication": {
+        "type": "jwt"
+    },
+    "lifecycle": {
+        "installed": "/installed",
+        "uninstalled": "/uninstalled"
+    },
+    "modules": {
+        "webhooks": [
+            {
+                "event": "*",
+                "url": "/webhook"
+            }
+        ],
+        "webItems": [
+            {
+                "url": "http://example.com?repoPath={repository.full_name}",
+                "name": {
+                    "value": "Example Web Item"
+                },
+                "location": "org.bitbucket.repository.navigation",
+                "key": "example-web-item",
+                "params": {
+                    "auiIcon": "aui-iconfont-link"
+                }
+            }
+        ],
+        "repoPages": [
+            {
+                "url": "/connect-example?repoPath={repository.full_name}",
+                "name": {
+                    "value": "Example Page"
+                },
+                "location": "org.bitbucket.repository.navigation",
+                "key": "example-repo-page",
+                "params": {
+                    "auiIcon": "aui-iconfont-doc"
+                }
+            }
+        ],
+        "webPanels": [
+            {
+                "url": "/connect-example?repoPath={repository.full_name}",
+                "name": {
+                    "value": "Example Web Panel"
+                },
+                "location": "org.bitbucket.repository.overview.informationPanel",
+                "key": "example-web-panel"
+            }
+        ]
+    },
+    "scopes": [
+        "account",
+        "repository"
+    ],
+    "contexts": [
+        "account"
+    ]
+}

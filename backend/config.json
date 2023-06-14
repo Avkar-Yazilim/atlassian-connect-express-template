@@ -1,0 +1,26 @@
+{
+    "product": "bitbucket",
+    "development": {
+        "port": "$PORT",
+        "errorTemplate": true,
+        "store": {
+            "adapter": "sequelize",
+            "dialect": "postgres",
+            "url": "$DATABASE_URL",
+            "logging": false
+        }
+    },
+    "production": {
+        "port": "$PORT",
+        "errorTemplate": true,
+        "localBaseUrl": "$AC_LOCAL_BASE_URL",
+        "store": {
+            "type": "postgres",
+            "url": "$DATABASE_URL"
+        },
+        "whitelist": [
+            "bitbucket.org",
+            "api.bitbucket.org"
+        ]
+    }
+}
