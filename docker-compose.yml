@@ -1,0 +1,48 @@
+version: '3'
+services:
+  extension:
+    build: ./backend
+    volumes:
+      - ./backend/src:/usr/src/app/src
+      - frontend-dist:/usr/src/app/src/public
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/db_addon
+      - AC_LOCAL_BASE_URL=https://${SERVEO_SUBDOMAIN}.serveo.net
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+      - serveo
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend/src:/usr/src/app/src
+      - frontend-dist:/usr/src/backend/public
+
+  db:
+    image: "postgres:15"
+    environment:
+      POSTGRES_DB: db_addon
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432 # Remove if you don't want to access the database from outside the docker network.
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  serveo:
+    build:
+      context: .
+      dockerfile: Dockerfile.serveo
+    tty: true
+    stdin_open: true
+    environment:
+      - SERVEO_SUBDOMAIN=${SERVEO_SUBDOMAIN}
+      - PROXY_HOST=extension
+      - SERVER_PORT=${PORT}
+
+volumes:
+  frontend-dist:
+  db:
+    driver: local

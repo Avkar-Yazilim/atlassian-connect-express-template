@@ -1,0 +1,6 @@
+version: '3'
+services:
+  dev-cli:
+    build: ./
+    cap_add:
+      - SYS_ADMIN
